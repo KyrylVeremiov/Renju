@@ -254,11 +254,11 @@ public class Analyser {
             for (ArrayList<Attack> attacks :
                     allAttacks) {
                 if(isBreakPoint(attacks)){
-                    weight+=100;
+//                    weight+=100;
                     Log.d(TAG,"isBreakpoint");
-//                    if(++breakpoints==2){
-//                        weight+=100;
-//                    }
+                    if(++breakpoints==2){
+                        weight+=100;
+                    }
                 }
                 for (Attack attack :
                         attacks) {
