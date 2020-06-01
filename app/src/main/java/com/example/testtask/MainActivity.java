@@ -32,35 +32,34 @@ public class MainActivity extends AppCompatActivity implements Observer<Pair<Int
         private static int currentCellX=7;
         private static int currentCellY=7;
         public static String TAG="MyMainActivityLogs";
-        private CameraGestureSensor mGestureSensor;
-
-    /** OpenCV library initialization. */
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS: {
-                    mOpenCVInitiated = true;
-                    CameraGestureSensor.loadLibrary();
-                    mGestureSensor.start(); 	// your main gesture sensor object
-
-                } break;
-                default:
-                {
-                    super.onManagerConnected(status);
-                } break;
+        private static CameraGestureSensor mGestureSensor;
+        private static boolean mOpenCVInitiated;
+        /** OpenCV library initialization. */
+        private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+            @Override
+            public void onManagerConnected(int status) {
+                switch (status) {
+                    case LoaderCallbackInterface.SUCCESS: {
+                        mOpenCVInitiated = true;
+                        CameraGestureSensor.loadLibrary();
+                        mGestureSensor.start(); 	// your main gesture sensor object
+                    } break;
+                    default:
+                    {
+                        super.onManagerConnected(status);
+                    } break;
+                }
             }
-        }
-    };
+        };
     @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
 
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
-            mGestureSensor = new CameraGestureSensor(this);
-            mGestureSensor.addGestureListener(this);
-            mGestureSensor.addClickListener(this);
+//            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+//            mGestureSensor = new CameraGestureSensor(this);
+//            mGestureSensor.addGestureListener(this);
+//            mGestureSensor.addClickListener(this);
             tableLayout=findViewById(R.id.tableLayout);
             height=Game.Field.height;
             width=Game.Field.width;
@@ -73,16 +72,33 @@ public class MainActivity extends AppCompatActivity implements Observer<Pair<Int
                 tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT));
                 for (int j = 0; j < width; j++) {
-                    CreateButton(i,j);
+                    CreateButton(i,j,false);
                     tableRow.addView(buttons[i][j],j);
                 }
                 tableLayout.addView(tableRow,i);
             }
-}
+        }
 
-        public void CreateButton(int i,int j){
+        @Override
+        public void onPause() {
+//            mGestureSensor.stop();
+            super.onPause();
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+//            mGestureSensor.start();
+        }
+
+
+        public void CreateButton(int i,int j,boolean currentButton){
             char cell=Game.Field.field[i][j];
-            if(cell==Game.getPlayer1().moveSymbol){
+            if(currentButton){
+                buttons[i][j]=new Button(this,null,0,R.style.current_button);
+                buttons[currentCellX][currentCellY]=new Button(this,null,0,R.style.player1_button);
+            }
+            else if(cell==Game.getPlayer1().moveSymbol){
                 buttons[i][j]=new Button(this,null,0,R.style.player1_button);
             }
             else if(cell==Game.getPlayer2().moveSymbol){
@@ -101,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements Observer<Pair<Int
                 public void onClick(View v) {
                     try {
                         if(Game.doMove(x,y)){
-                            CreateButton(x,y);
+                            CreateButton(x,y,false);
                             updateUI(x,y);
                             Log.d(TAG,"move is done: x: "+x+", y: "+y);
                         }
@@ -126,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements Observer<Pair<Int
     public void onChanged(Pair<Integer, Integer> pair) {
         Log.d(TAG,"Bot have done a move: " + pair.first+" "+pair.second);
         if(Game.playingWithBot  && pair.first>=0 && pair.second>=0){
-            CreateButton(pair.first,pair.second);
+            CreateButton(pair.first,pair.second,false);
             updateUI(pair.first,pair.second);
         }
         else if(pair.first<0 && pair.second<0){
@@ -139,9 +155,18 @@ public class MainActivity extends AppCompatActivity implements Observer<Pair<Int
         }
     }
 
+    public void newCurrentCell(int newCurrentCellX, int newCurrentCellY){
+        CreateButton(newCurrentCellX,newCurrentCellY,true);
+
+        currentCellY=newCurrentCellY;
+        currentCellX=newCurrentCellX;
+
+    }
     @Override
     public void onGestureUp(CameraGestureSensor caller, long gestureLength) {
-
+        if(currentCellY>0){
+            newCurrentCell(currentCellX,currentCellY-1);
+        }
     }
 
     @Override

@@ -22,6 +22,6 @@ android {
 }
 
 dependencies {
-    tcompile project(':java')
+    api project(':java')
     implementation project(path: ':openCVLibrary24136')
 }

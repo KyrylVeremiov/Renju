@@ -26,15 +26,15 @@ public class Analyser {
         ATTACK_WEIGHT[1][1] = 0.1;
         ATTACK_WEIGHT[2][1] = 2;
         ATTACK_WEIGHT[3][1] = 4;
-//        ATTACK_WEIGHT[4][1] = 6;
-        ATTACK_WEIGHT[4][1] = 10;
+        ATTACK_WEIGHT[4][1] = 6;
+//        ATTACK_WEIGHT[4][1] = 10;
         ATTACK_WEIGHT[5][1] = 200;
 
         ATTACK_WEIGHT[1][2] = 0.5;
-//        ATTACK_WEIGHT[2][2] = 5;
-//        ATTACK_WEIGHT[3][2] = 7;
-        ATTACK_WEIGHT[2][2] = 25;
-        ATTACK_WEIGHT[3][2] = 50;
+        ATTACK_WEIGHT[2][2] = 5;
+        ATTACK_WEIGHT[3][2] = 7;
+//        ATTACK_WEIGHT[2][2] = 25;
+//        ATTACK_WEIGHT[3][2] = 50;
         ATTACK_WEIGHT[4][2] = 100;
         ATTACK_WEIGHT[5][2] = 200;
     }
@@ -139,12 +139,12 @@ public class Analyser {
                     currentAttack.cells++;
                     if (iterator == 5) sixthCell = true;
                 }
-                attackPlace++;
                 else {//if(Game.Field.field[x][y]!=substitutableSymbol)
 //                    attacks.add(currentAttack);
 //                    currentAttack=new Attack();
                     return false;
                 }
+                attackPlace++;
                 return true;
             } else {
                 return false;
